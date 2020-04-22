@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="todo_manager.css">
+
+    <title>TODO Manager</title>
+    <link rel="icon" href="https://image.flaticon.com/icons/png/512/60/60726.png" type="image/png" />
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Navbar -->
+        <nav class="row navbar navbar-light bg-warning">
+            <button class="navbar-toggler d-sm-none" 
+                    type="button" 
+                    data-toggle="collapse" 
+                    data-target="#sidebar"> 
+                    <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+                <svg class="bi bi-check-box" width="30" height="30" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M15.354 2.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3-3a.5.5 0 11.708-.708L8 9.293l6.646-6.647a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M1.5 13A1.5 1.5 0 003 14.5h10a1.5 1.5 0 001.5-1.5V8a.5.5 0 00-1 0v5a.5.5 0 01-.5.5H3a.5.5 0 01-.5-.5V3a.5.5 0 01.5-.5h8a.5.5 0 000-1H3A1.5 1.5 0 001.5 3v10z" clip-rule="evenodd"/>
+                </svg>
+                TODO Manager
+            </a>
+            <form class="form-inline d-none d-sm-block">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <a class="nav-item nav-link" href="#">
+                <svg class="bi bi-people-circle" width="30" height="30" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 008 15a6.987 6.987 0 005.468-2.63z"/>
+                    <path fill-rule="evenodd" d="M8 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zM0 8a8 8 0 1116 0A8 8 0 010 8z" clip-rule="evenodd"/>
+                </svg>
+            </a>
+        </nav>
+
+        <div class="row wrapper">
+            <!-- Sidebar -->
+            <div class="col-0 col-sm-4 bg-secondary text-white">
+                <nav id="sidebar" class="d-sm-block collapse">
+                    <!-- Filters-->                   
+                    <ul class="list-unstyled components">
+                        <p>FILTERS</p>
+                        <li class="active">
+                            <a id = "all" href='#'>All</a>
+                        </li>
+                        <li>
+                            <a id = "important" href="#">Important</a>
+                        </li>
+                        <li>
+                            <a id = "today" href="#">Today</a>
+                        </li>
+                        <li>
+                            <a id = "next-7-days" href="#">Next 7 Days</a>
+                        </li>
+                        <li>
+                            <a id = "private" href="#">Private</a>
+                        </li>
+                        <li>
+                            <a id = "shared" href="#">Shared with...</a>
+                        </li>
+                    </ul>
+                    <!-- Projects-->   
+                    <ul class="list-unstyled components" id="projectList">
+                        <p>PROJECTS</p>
+                    </ul>
+                </nav>
+            </div>
+            <!-- Main Text -->
+            <div class="col-12 col-sm-8 bg-light" id= "maintext">
+                <ul class="list-group" id = "taskList">
+                    <p id = "title" class="title">ALL</p>
+                </ul>
+                <!-- Add Button -->
+                <button type="button" 
+                        class="btn btn-warning btn-circle btn-lg shadow"
+                        data-toggle="modal"
+                        data-target="#newTaskModal">+</button>
+
+                <!-- Version -->
+                <p class="version d-none d-sm-block">v-beta-4.3.2</p>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newTaskModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"
+                                    id="exampleModalCenterTitle">Add New Task</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form id="new-task" autocomplete="off">
+                                <div class="modal-body">
+                                    <div class="form-group row">
+                                        <label for="description"
+                                               class="col-lg-2 col-form-label">Description</label>
+                                        <div class="col-sm-10">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="description"
+                                                   placeholder="Task description"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="project"
+                                               class="col-lg-2 col-form-label">Project</label>
+                                        <div class="col-sm-10">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="project"
+                                                   placeholder="Project name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-2">Important</div>
+                                        <div class="col-sm-10">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="important-check">
+                                                <label class="form-check-label" for="important-check">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-2">Shared</div>
+                                        <div class="col-sm-10">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="shared-check">
+                                                <label class="form-check-label" for="shared-check">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" id="deadlineInput">
+                                        <label for="date"
+                                               class="col-lg-2 col-form-label">Deadline</label>
+                                        <div class="col-sm-10">
+                                            <input type="date"
+                                                   id="date">
+                                            <input type="time"
+                                                   id="time">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-warning">Add Task</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <!-- Libraries: moment -->
+    <script src = "moment.js"></script>
+    <!-- My JS: filters first, then app, then main -->
+    <script src = "filters.js"></script>
+    <script src = "app.js"></script>
+    <script src = "main.js"></script>
+</body>
+
+</html>
