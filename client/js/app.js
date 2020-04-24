@@ -180,12 +180,4 @@ function expiredTask (task){
             break;
         }
     }
-};
-
-// function hideModal(){
-//     $('#newTaskModal').modal('hide');
-// }
-//
-// function resetForm(form){
-//     form.reset();
-// }
+}
