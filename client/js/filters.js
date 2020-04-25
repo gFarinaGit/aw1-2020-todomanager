@@ -1,157 +1,121 @@
 "use strict";
 
 class Filters {
-    constructor(tasks, projectList) {
+    constructor(tasks, projects) {
         this.tasks = tasks;
-        this.projectList = projectList;
-        this.projectFilters = [];
+        this.projects = projects;
 
+        // Take title
         this.title = document.getElementById("title");
-        this.all = document.getElementById("all");
-        this.important = document.getElementById("important");
-        this.today = document.getElementById("today");
-        this.next7days = document.getElementById("next-7-days");
-        this.privato = document.getElementById("private");
-        this.shared = document.getElementById("shared");
-        this.last = this.all;
 
-        this.showAll();
-        this.showImportant();
-        this.showToday();
-        this.showNext7days();
-        this.showPrivate();
-        this.showShared();
-        this.showProject();
+        // set filters listeners
+        this.setFiltersListeners();
+
+        // set projects listeners
+        this.setProjectsListeners();
     }
 
-    showAll(){
-        this.all.addEventListener('click', () => {
-            // Title Update
+    hideAll(){
+        document.querySelector("#sidebar li.active").classList.remove("active");
+        this.tasks.forEach( (t) => {
+            let task = document.getElementById("task" + t.id);
+            task.className = "list-group-item shadow d-none";
+        })
+    }
+
+    setFiltersListeners(){
+        // All filter listener
+        const all = document.getElementById("all");
+        all.addEventListener('click', () => {
+            document.querySelector("#sidebar li.active").classList.remove("active");
             this.title.textContent = "ALL";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.all;
-            this.all.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
+            all.parentElement.className = "active";
+            this.tasks.forEach( (t) => {
+                let task = document.getElementById("task" + t.id);
                 task.className = "list-group-item shadow d-inline-flex";
-            })
+            });
         });
-    }
 
-    showImportant(){
-        this.important.addEventListener('click', () => {
-            // Title Update
+        // Important filter listener
+        const important = document.getElementById("important");
+        important.addEventListener('click', () => {
+            this.hideAll();
             this.title.textContent = "IMPORTANT";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.important;
-            this.important.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.urgent === "true")
-                    task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
-            })
+            important.parentNode.className = "active";
+            this.tasks.filter( (t) => t.important )
+                .forEach( (t) => {
+                let task = document.getElementById("task" + t.id);
+                task.className = "list-group-item shadow d-inline-flex";
+            });
         });
-    }
 
-    showToday(){
-        this.today.addEventListener('click', () => {
-            // Title Update
+        // Today filter listener
+        const today = document.getElementById("today");
+        today.addEventListener('click', () => {
+            this.hideAll();
             this.title.textContent = "TODAY ";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.today;
-            this.today.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.deadline != null && t.deadline.isSame(moment(), 'day'))
+            today.parentNode.className = "active";
+            this.tasks.filter( (t) => t.deadline && t.deadline.isSame(moment(), 'day') )
+                .forEach( (t) => {
+                    let task = document.getElementById("task" + t.id);
                     task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
-            })
+            });
         });
-    }
 
-    showNext7days(){
-        this.next7days.addEventListener('click', () => {
-            // Title Update
+        // Next 7 Days filter listener
+        const next7days = document.getElementById("next-7-days");
+        next7days.addEventListener('click', () => {
+            this.hideAll();
             this.title.textContent = "NEXT 7 DAYS";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.next7days;
-            this.next7days.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.deadline != null
-                    && t.deadline.isBetween(moment(), moment().add(7, 'd'),
-                        'd', '(]'))
+            next7days.parentNode.className = "active";
+            this.tasks.filter( (t) => t.deadline &&
+                t.deadline.isBetween(moment(), moment().add(7, 'd'), 'd', '(]') )
+                .forEach( (t) => {
+                    let task = document.getElementById("task" + t.id);
                     task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
-            })
+            });
         });
-    }
 
-    showPrivate(){
-        this.privato.addEventListener('click', () => {
-            // Title Update
+        // Private filter listener
+        const priv = document.getElementById("private");
+        priv.addEventListener('click', () => {
+            this.hideAll();
             this.title.textContent = "PRIVATE";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.privato;
-            this.privato.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.shared === "false")
+            priv.parentNode.className = "active";
+            this.tasks.filter( (t) => t.privateTask)
+                .forEach( (t) => {
+                    let task = document.getElementById("task" + t.id);
                     task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
             })
         });
-    }
 
-    showShared(){
-        this.shared.addEventListener('click', () => {
-            // Title Update
+        // Shared filter listener
+        const shared = document.getElementById("shared");
+        shared.addEventListener('click', () => {
+            this.hideAll();
             this.title.textContent = "SHARED WITH...";
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.shared;
-            this.shared.parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.shared === "true")
+            shared.parentNode.className = "active";
+            this.tasks.filter( (t) => !t.privateTask)
+                .forEach( (t) => {
+                    let task = document.getElementById("task" + t.id);
                     task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
             })
         });
     }
 
-    showProject(){
-        this.projectList.forEach( (p, id) => this.addProject(p, id) );
-    }
-
-    addProject(p, id) {
-        this.projectFilters.push(document.getElementById("project" + id));
-        this.projectFilters[id].addEventListener("click", () => {
-            // Title Update
-            this.title.textContent = p;
-            // Selection Update
-            this.last.parentElement.className = "";
-            this.last = this.projectFilters[id];
-            this.projectFilters[id].parentNode.className = "active";
-            // Task Update
-            this.tasks.forEach( (t, id) => {
-                let task = document.getElementById(id);
-                if(t.project === p)
-                    task.className = "list-group-item shadow d-inline-flex";
-                else task.className = "list-group-item shadow d-none";
-            })
+    setProjectsListeners(){
+        this.projects.forEach( (p) => {
+            const project = document.getElementById("project" + p.id);
+            project.addEventListener("click", () => {
+                this.hideAll();
+                this.title.textContent = p.name.toUpperCase();
+                project.parentNode.className = "active";
+                this.tasks.filter( (t) => t.project === p.name )
+                    .forEach( (t) => {
+                        let task = document.getElementById("task" + t.id);
+                        task.className = "list-group-item shadow d-inline-flex";
+                })
+            });
         })
     }
 }

@@ -82,15 +82,15 @@ a, a:hover, a:focus {
 }
 
 /* Checkbox for important tasks */
-.important .custom-checkbox .custom-control-input~.custom-control-label::before{
+.custom-checkbox .custom-control-input.important~.custom-control-label::before{
     border-color: red;
 }
 
-.important .custom-checkbox .custom-control-input:checked~.custom-control-label::before{
+.custom-checkbox .custom-control-input.important:checked~.custom-control-label::before{
     background-color: red;
   }
 
-.important .custom-checkbox .custom-control-input:focus~.custom-control-label::before{
+.custom-checkbox .custom-control-input.important:focus~.custom-control-label::before{
     box-shadow:  0 0 0 0.2rem rgb(255, 148, 148);
 }
 
