@@ -5,7 +5,7 @@
 // Data Access Object 
 
 const sqlite = require('sqlite3');
-const db = new sqlite.Database('../db/tasks.db', (err) => {
+const db = new sqlite.Database('./db/tasks.db', (err) => {
   if (err) throw err;
 });
 

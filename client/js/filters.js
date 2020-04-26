@@ -23,18 +23,21 @@ class Filters {
         })
     }
 
+    showAll(){
+        document.querySelector("#sidebar li.active").classList.remove("active");
+        const all = document.getElementById("all");
+        this.title.textContent = "ALL";
+        all.parentElement.className = "active";
+        this.tasks.forEach( (t) => {
+            let task = document.getElementById("task" + t.id);
+            task.className = "list-group-item shadow d-inline-flex";
+        })
+    }
+
     setFiltersListeners(){
         // All filter listener
         const all = document.getElementById("all");
-        all.addEventListener('click', () => {
-            document.querySelector("#sidebar li.active").classList.remove("active");
-            this.title.textContent = "ALL";
-            all.parentElement.className = "active";
-            this.tasks.forEach( (t) => {
-                let task = document.getElementById("task" + t.id);
-                task.className = "list-group-item shadow d-inline-flex";
-            });
-        });
+        all.addEventListener('click', () => this.showAll() );
 
         // Important filter listener
         const important = document.getElementById("important");
@@ -104,18 +107,20 @@ class Filters {
     }
 
     setProjectsListeners(){
-        this.projects.forEach( (p) => {
-            const project = document.getElementById("project" + p.id);
-            project.addEventListener("click", () => {
-                this.hideAll();
-                this.title.textContent = p.name.toUpperCase();
-                project.parentNode.className = "active";
-                this.tasks.filter( (t) => t.project === p.name )
-                    .forEach( (t) => {
-                        let task = document.getElementById("task" + t.id);
-                        task.className = "list-group-item shadow d-inline-flex";
+        this.projects.forEach( (p) => this.setProjectListener(p) );
+    }
+
+    setProjectListener(p){
+        const project = document.getElementById("project" + p.id);
+        project.addEventListener("click", () => {
+            this.hideAll();
+            this.title.textContent = p.name.toUpperCase();
+            project.parentNode.className = "active";
+            this.tasks.filter( (t) => t.project === p.name )
+                .forEach( (t) => {
+                    let task = document.getElementById("task" + t.id);
+                    task.className = "list-group-item shadow d-inline-flex";
                 })
-            });
-        })
+        });
     }
 }

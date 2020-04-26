@@ -113,6 +113,8 @@ class TaskManager{
         if(this.projects.filter( p => p.name === task.project ).length === 0){
             this.projects.push(new Project(task.project));
             this.createProjectHTML(this.projects[this.projects.length - 1]);
+            filters.setProjectListener(this.projects[this.projects.length - 1]);
         }
+        filters.showAll();
     }
 }
