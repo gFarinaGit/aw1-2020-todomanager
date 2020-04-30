@@ -1,4 +1,3 @@
-
 'use strict';
 
 // DAO module for accessing courses and exams
@@ -73,7 +72,7 @@ exports.getLastId = function() {
 
 exports.createTask = function(task) {
   return new Promise((resolve, reject) => {
-    const sql = 'INSERT INTO tasks(id, description, project, important, private, deadline, completed) VALUES(?, ?, ? , ?, ?, DATE(?), ?)';
+    const sql = 'INSERT INTO tasks(id, description, project, important, private, deadline, completed) VALUES(?, ?, ? , ?, ?, DATETIME(?), ?)';
     db.run(sql, [task.id, task.description, task.project, task.important, task.private, task.deadline, task.completed], (err) => {
       if (err) {
         reject(err);
@@ -86,7 +85,7 @@ exports.createTask = function(task) {
 
 exports.updateTask = function (task) {
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE tasks SET description = ?, project = ?, important = ?, private = ?, deadline = DATE(?), completed = ? WHERE id = ?';
+    const sql = 'UPDATE tasks SET description = ?, project = ?, important = ?, private = ?, deadline = DATETIME(?), completed = ? WHERE id = ?';
     db.run(sql, [task.description, task.project, task.important, task.private, task.deadline, task.completed, task.id], (err) => {
       if (err) {
         reject(err);

@@ -1,35 +1,37 @@
 "use strict";
 
-class Filters {
-    constructor(tasks, projects) {
-        this.tasks = tasks;
-        this.projects = projects;
+import * as Api from "./api.js"
 
+class Filters {
+    constructor() {
         // Take title
         this.title = document.getElementById("title");
 
         // set filters listeners
         this.setFiltersListeners();
-
-        // set projects listeners
-        this.setProjectsListeners();
     }
 
-    hideAll(){
+    async hideAll(){
         document.querySelector("#sidebar li.active").classList.remove("active");
-        this.tasks.forEach( (t) => {
-            let task = document.getElementById("task" + t.id);
+        const ids = await Api.filter("all");
+        ids.forEach( (o) => {
+            let task = document.getElementById("task" + o.id);
             task.className = "list-group-item shadow d-none";
         })
     }
 
-    showAll(){
+    async showAll(){
         document.querySelector("#sidebar li.active").classList.remove("active");
         const all = document.getElementById("all");
         this.title.textContent = "ALL";
         all.parentElement.className = "active";
-        this.tasks.forEach( (t) => {
-            let task = document.getElementById("task" + t.id);
+        const ids = await Api.filter("all");
+        this.showTasks(ids);
+    }
+
+    showTasks(ids){
+        ids.forEach( (o) => {
+            let task = document.getElementById("task" + o.id);
             task.className = "list-group-item shadow d-inline-flex";
         })
     }
@@ -41,86 +43,65 @@ class Filters {
 
         // Important filter listener
         const important = document.getElementById("important");
-        important.addEventListener('click', () => {
+        important.addEventListener('click', async () => {
             this.hideAll();
             this.title.textContent = "IMPORTANT";
             important.parentNode.className = "active";
-            this.tasks.filter( (t) => t.important )
-                .forEach( (t) => {
-                let task = document.getElementById("task" + t.id);
-                task.className = "list-group-item shadow d-inline-flex";
-            });
+            const ids = await Api.filter("important");
+            this.showTasks(ids);
         });
 
         // Today filter listener
         const today = document.getElementById("today");
-        today.addEventListener('click', () => {
+        today.addEventListener('click', async () => {
             this.hideAll();
             this.title.textContent = "TODAY ";
             today.parentNode.className = "active";
-            this.tasks.filter( (t) => t.deadline && t.deadline.isSame(moment(), 'day') )
-                .forEach( (t) => {
-                    let task = document.getElementById("task" + t.id);
-                    task.className = "list-group-item shadow d-inline-flex";
-            });
+            const ids = await Api.filter("today");
+            this.showTasks(ids);
         });
 
         // Next 7 Days filter listener
         const next7days = document.getElementById("next-7-days");
-        next7days.addEventListener('click', () => {
+        next7days.addEventListener('click', async () => {
             this.hideAll();
             this.title.textContent = "NEXT 7 DAYS";
             next7days.parentNode.className = "active";
-            this.tasks.filter( (t) => t.deadline &&
-                t.deadline.isBetween(moment(), moment().add(7, 'd'), 'd', '(]') )
-                .forEach( (t) => {
-                    let task = document.getElementById("task" + t.id);
-                    task.className = "list-group-item shadow d-inline-flex";
-            });
+            const ids = await Api.filter("next7days");
+            this.showTasks(ids);
         });
 
         // Private filter listener
         const priv = document.getElementById("private");
-        priv.addEventListener('click', () => {
+        priv.addEventListener('click', async() => {
             this.hideAll();
             this.title.textContent = "PRIVATE";
             priv.parentNode.className = "active";
-            this.tasks.filter( (t) => t.privateTask)
-                .forEach( (t) => {
-                    let task = document.getElementById("task" + t.id);
-                    task.className = "list-group-item shadow d-inline-flex";
-            })
+            const ids = await Api.filter("private");
+            this.showTasks(ids);
         });
 
         // Shared filter listener
         const shared = document.getElementById("shared");
-        shared.addEventListener('click', () => {
+        shared.addEventListener('click', async () => {
             this.hideAll();
             this.title.textContent = "SHARED WITH...";
             shared.parentNode.className = "active";
-            this.tasks.filter( (t) => !t.privateTask)
-                .forEach( (t) => {
-                    let task = document.getElementById("task" + t.id);
-                    task.className = "list-group-item shadow d-inline-flex";
-            })
+            const ids = await Api.filter("shared");
+            this.showTasks(ids);
         });
-    }
-
-    setProjectsListeners(){
-        this.projects.forEach( (p) => this.setProjectListener(p) );
     }
 
     setProjectListener(p){
         const project = document.getElementById("project" + p.id);
-        project.addEventListener("click", () => {
+        project.addEventListener("click", async () => {
             this.hideAll();
             this.title.textContent = p.name.toUpperCase();
             project.parentNode.className = "active";
-            this.tasks.filter( (t) => t.project === p.name )
-                .forEach( (t) => {
-                    let task = document.getElementById("task" + t.id);
-                    task.className = "list-group-item shadow d-inline-flex";
-                })
+            const ids = await Api.projectFilter(p.name);
+            this.showTasks(ids);
         });
     }
 }
+
+export default Filters;

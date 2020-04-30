@@ -1,12 +1,13 @@
 "use strict";
 
+import TaskManager from "./taskmanager.js";;
+import Task from "./task.js";
+import * as Api from "./api.js"
+
 class App {
     constructor() {
         // create new task manager
         this.taskManager = new TaskManager();
-
-        // create filter manager
-        this.filters = new Filters(this.taskManager.tasks, this.taskManager.projects);
 
         // new task form management
         this.formManagement();
@@ -52,15 +53,24 @@ class App {
             else if (date.value !== "")
                 deadline = date.value;
 
-            this.taskManager.addTask(
-                new Task(this.taskManager.tasks.length + 1, description, project, important, privateTask, deadline),
-                this.filters);
+            // Inviare i dati al server con API addTask
+            Api.addTask({
+                description: description,
+                project: project,
+                important: important,
+                private: privateTask,
+                deadline: deadline,
+                completed: 0,
+            }).then( (id) => {
+                this.taskManager.addTask(
+                    new Task(id, description, project, important, privateTask, deadline, 0)
+            )})
+                .catch( (err) => console.log(err) );
 
             document.getElementById("new-task").reset();
             document.getElementById("closeModal").click();
-
-            // todo: refresh user interface
-
         });
     };
 }
+
+export default App ;

@@ -1,36 +1,40 @@
 "use strict";
 
+import Task from "./task.js";
+import Project from "./project.js";
+import * as Api from "./api.js"
+import Filters from "./filters.js";
+
 class TaskManager{
     constructor() {
-        // static taskslist
-        this.tasksList = [
-            {"id":1,"description":"Watch Mr. Robot","important":0,"private":1,"project":"Personal","deadline":"2020-04-28 18:59:00","completed":0},
-            {"id":2,"description":"Go for a walk","important":1,"private":1,"project":"Personal","deadline":"2020-04-18 08:00:00","completed":0},
-            {"id":3,"description":"Organize a party","important":0,"private":0,"project":"Personal","deadline":null,"completed":0},
-            {"id":4,"description":"Watch the Express videolecture","important":1,"private":1,"project":"WebApp I","deadline":"2020-04-24 23:59:59","completed":0},
-            {"id":5,"description":"put","important":0,"private":0,"project":null,"deadline":"2020-04-25 20:00:00","completed":0}]
+        // Create filter manager
+        this.filters = new Filters();
 
-        // take points where attach html nodes
+        // take points where append html nodes
         this.taskElem = document.getElementById("taskList");
         this.projectElem = document.getElementById("projectList");
 
         // create Task list
-        this.tasks = [];
-        this.tasksList.forEach( (t) => {
-            this.tasks.push(new Task(t.id, t.description, t.project, t.important, t.private, t.deadline));
-            this.createTaskHTML(this.tasks[this.tasks.length - 1]);
-        });
+        Api.getTasks().then( (res) => {
+            res.forEach( (t) =>{
+                const task = new Task(t.id, t.description, t.project, t.important, t.private, t.deadline, t.completed);
+                this.createTaskHTML(task);
+            })
+        })
+            .catch( (err) => console.log(err) );
 
         // create Project list
         this.projects = [];
-        this.tasks.filter( (t) => (t.project) )
-            .forEach( (t) => {
-                if(this.projects.filter( (p) => (p.name === t.project) ).length === 0) {
-                    this.projects.push(new Project(t.project));
-                    this.createProjectHTML(this.projects[this.projects.length - 1]);
-                }
-        });
-    }
+        Api.getProjects().then( (res) => {
+            res.forEach( (p) =>{
+                this.projects.push(new Project(p.project));
+                this.createProjectHTML(this.projects[this.projects.length - 1]);
+                this.filters.setProjectListener(this.projects[this.projects.length - 1])
+            })
+
+        })
+            .catch( (err) => console.log(err) );
+   }
 
     createTaskHTML(t){
         // list entry creation
@@ -42,7 +46,6 @@ class TaskManager{
         // checkbox creation
         let div = document.createElement('div');
         div.className = "custom-control custom-checkbox";
-        // important.append(div);
         li.append(div);
 
         // chechbox input
@@ -107,14 +110,16 @@ class TaskManager{
         li.append(a);
     }
 
-    addTask(task, filters){
-        this.tasks.push(task);
+    addTask(task){
         this.createTaskHTML(task);
-        if(this.projects.filter( p => p.name === task.project ).length === 0){
+        if(this.projects.filter( p => p.name === task.project ).length === 0
+            && task.project !== undefined ){
             this.projects.push(new Project(task.project));
             this.createProjectHTML(this.projects[this.projects.length - 1]);
-            filters.setProjectListener(this.projects[this.projects.length - 1]);
+            this.filters.setProjectListener(this.projects[this.projects.length - 1]);
         }
-        filters.showAll();
+        this.filters.showAll();
     }
 }
+
+export default TaskManager;

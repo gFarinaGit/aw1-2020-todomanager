@@ -13,7 +13,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 // Set-up the 'client' component as a static website
-app.use(express.static('client'));
+app.use(express.static('../client'));
 app.get('/', (req, res) => res.redirect('/index.html'));
 
 // REST API endpoints
@@ -63,7 +63,7 @@ app.post('/tasks', [
   if (!errors.isEmpty())
     return res.status(422).json({errors: errors.array()});
   dao.getLastId().then( (id) => {
-    dao.createTask({
+      dao.createTask({
       id: id+1,
       description: req.body.description,
       project: req.body.project,
