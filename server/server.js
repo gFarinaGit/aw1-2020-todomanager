@@ -57,7 +57,7 @@ app.post('/tasks', [
   check('important').isBoolean(),
   check('private').isBoolean(),
   check('deadline').optional().isISO8601(),
-  check('completed').isBoolean(),
+  // check('completed').isBoolean(),
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty())
@@ -70,7 +70,7 @@ app.post('/tasks', [
       important: req.body.important,
       private: req.body.private,
       deadline: req.body.deadline,
-      completed: req.body.completed,
+      completed: 0,
     }).then((result) => res.json(id+1))
         .catch( () => res.status(503).end() );
   });
@@ -90,24 +90,16 @@ app.put('/tasks/:id', [
     check('important').optional().isBoolean(),
     check('private').optional().isBoolean(),
     check('deadline').optional().isISO8601(),
-    check('completed').optional().isBoolean(),
 ],(req, res) => {
   dao.readTaskById(req.params.id)
       .then((task) => {
-        if(task === undefined) res.status(404).end();
-        if(req.body.description !== undefined)
+          if(task === undefined) res.status(404).end();
           task.description = req.body.description;
-        if(req.body.project !== undefined)
           task.project = req.body.project;
-        if(req.body.important !== undefined)
           task.important = req.body.important;
-        if(req.body.private !== undefined)
           task.private = req.body.private;
-        if(req.body.deadline !== undefined)
           task.deadline = req.body.deadline;
-        if(req.body.completed !== undefined)
-          task.completed = req.body.completed;
-        dao.updateTask(task).then((result) => res.json(task.id))
+    dao.updateTask(task).then((result) => res.json(task))
             .catch( () => res.status(503).end() );
       })
       .catch(() => { res.status(500).end(); });

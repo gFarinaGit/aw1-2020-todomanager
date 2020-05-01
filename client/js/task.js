@@ -12,6 +12,11 @@ class Task {
             this.deadline =  moment(deadline);
         this.completed = completed;
     }
+
+    static createTask(json){
+        return new Task(json.id, json.description, json.project, json.important, json.private, json.deadline, json.completed);
+    }
+
 }
 
 export default Task;

@@ -16,6 +16,7 @@ class App {
     formManagement() {
         // custom validation for deadline input
         const date = document.getElementById("form_date");
+        date.min = moment().format("YYYY-MM-DD");
         const time = document.getElementById("form_time");
         time.addEventListener("input", () => {
             if(time.value !== "") { // if there is time, date is needed
@@ -52,24 +53,39 @@ class App {
                 deadline = date.value + " " + time.value;
             else if (date.value !== "")
                 deadline = date.value;
-
-            // Inviare i dati al server con API addTask
-            Api.addTask({
+            const task = {
                 description: description,
                 project: project,
                 important: important,
                 private: privateTask,
-                deadline: deadline,
-                completed: 0,
-            }).then( (id) => {
-                this.taskManager.addTask(
-                    new Task(id, description, project, important, privateTask, deadline, 0)
-            )})
-                .catch( (err) => console.log(err) );
-
-            document.getElementById("new-task").reset();
+                deadline: deadline
+            };
+            // Inviare i dati al server con API addTask
+            if(form.name === "post"){
+                Api.addTask(task).then((id) => {
+                    this.taskManager.addTask(
+                        new Task(id, description, project, important, privateTask, deadline, 0)
+                    )
+                })
+                    .catch((err) => console.log(err));
+            }
+            else if(form.name === "put"){
+                Api.updateTask(task, TaskManager.currentID).then( (res) =>
+                    this.taskManager.updateTaskHTML(Task.createTask(res) ));
+            }
             document.getElementById("closeModal").click();
         });
+
+        // Close/Cancel Management
+        form.elements["form_cancel"].addEventListener('click', () => {
+            form.reset();
+            form.name = "post";
+        });
+        document.getElementById("closeModal").addEventListener('click', () => {
+            form.reset();
+            form.name = "post";
+        });
+
     };
 }
 

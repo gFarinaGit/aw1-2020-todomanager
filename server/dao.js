@@ -85,8 +85,8 @@ exports.createTask = function(task) {
 
 exports.updateTask = function (task) {
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE tasks SET description = ?, project = ?, important = ?, private = ?, deadline = DATETIME(?), completed = ? WHERE id = ?';
-    db.run(sql, [task.description, task.project, task.important, task.private, task.deadline, task.completed, task.id], (err) => {
+    const sql = 'UPDATE tasks SET description = ?, project = ?, important = ?, private = ?, deadline = DATETIME(?) WHERE id = ?';
+    db.run(sql, [task.description, task.project, task.important, task.private, task.deadline, task.id], (err) => {
       if (err) {
         reject(err);
         return;
