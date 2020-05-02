@@ -17,23 +17,13 @@ class TaskManager{
         this.taskElem = document.getElementById("taskList");
         this.projectElem = document.getElementById("projectList");
 
-        // create Task list
         Api.getTasks().then( (res) => {
             res.forEach( (t) => this.createTaskHTML(t))
         })
             .catch( (err) => console.log(err) );
 
-        // create Project list
-        this.projects = [];
-        Api.getProjects().then( (res) => {
-            res.forEach( (p) =>{
-                this.projects.push(new Project(p.project));
-                this.createProjectHTML(this.projects[this.projects.length - 1]);
-                this.filters.setProjectListener(this.projects[this.projects.length - 1])
-            })
 
-        })
-            .catch( (err) => console.log(err) );
+        this.reloadProjects();
    }
 
     createTaskHTML(t){
@@ -58,7 +48,7 @@ class TaskManager{
         checkbox.id = "checkbox" + t.id;
         if(t.completed) checkbox.checked = true;
         // set checkbox listener
-        checkbox.addEventListener('click', () => Api.taskCompleted(t.id));
+        checkbox.addEventListener('click', () => Api.taskCheck(t.id));
         div.append(checkbox);
 
         // checkbox label
@@ -73,6 +63,7 @@ class TaskManager{
             let project = document.createElement('span');
             project.className = "label bg-secondary text-white"
             project.textContent = t.project;
+            project.id = "projectTask" + t.id;
             li.append(project);
         }
 
@@ -101,8 +92,9 @@ class TaskManager{
             }, t.deadline.diff(now), t);
         }
 
+        // Edit button
         let edit = document.createElement('a');
-        edit.className = "link";
+        edit.className = "link edit";
         edit.id = "edit" + t.id;
         edit.href = '#';
         edit.insertAdjacentHTML("beforeend", `<svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -112,6 +104,7 @@ class TaskManager{
         edit.addEventListener('click', () => this.editForm(t.id) );
         li.append(edit);
 
+        // Delete button
         let trashcan = document.createElement('a');
         trashcan.className = "link";
         trashcan.id = "delete" + t.id;
@@ -142,17 +135,8 @@ class TaskManager{
 
     addTask(task){
         this.createTaskHTML(task);
-        if(this.projects.filter( p => p.name === task.project ).length === 0
-            && task.project !== undefined ){
-            this.projects.push(new Project(task.project));
-            this.createProjectHTML(this.projects[this.projects.length - 1]);
-            this.filters.setProjectListener(this.projects[this.projects.length - 1]);
-        }
+        if(task.project !== undefined) this.reloadProjects();
         this.filters.showAll();
-    }
-
-    deleteTaskHTML(id) {
-        document.getElementById("task" + id).remove();
     }
 
     async editForm(id){
@@ -177,7 +161,24 @@ class TaskManager{
     }
 
     updateTaskHTML(task){
+        this.deleteTaskHTML(task.id);
+        this.createTaskHTML(task);
+    }
 
+    deleteTaskHTML(id) {
+        const project = document.getElementById("projectTask" + id);
+        if(project !== undefined) this.reloadProjects();
+        document.getElementById("task" + id).remove();
+    }
+
+    // every time there is an insert, edit or remove => refresh the project list in the sidebar.
+    async reloadProjects() {
+        document.getElementById("projectList").innerHTML = '<p>PROJECTS</p>';
+        const projects = await Api.getProjects();
+        projects.forEach( (p) => {
+            this.createProjectHTML(p);
+            this.filters.setProjectListener(p);
+        });
     }
 }
 

@@ -1,6 +1,7 @@
 "use strict";
 
 import Task from "./task.js";
+import Project from "./project.js";
 
 async function getTasks() {
     // call REST API: GET /tasks
@@ -27,7 +28,7 @@ async function getProjects() {
     const response = await fetch('/projects');
     const projects_json = await response.json();
     if(response.ok)
-        return projects_json;
+        return projects_json.map( (json) => Project.createProject(json) );
     else
         throw projects_json;
 }
@@ -74,9 +75,9 @@ async function addTask(task) {
     });
 }
 
-async function taskCompleted(id) {
+async function taskCheck(id) {
     // call REST API: PUT /tasks/<id>/completed
-    const response = await fetch('/tasks/' + id + "/completed",
+    const response = await fetch('/tasks/' + id + "/check",
                                 { method: 'PUT',});
     if(response.ok) return response;
     else return null;
@@ -91,7 +92,6 @@ async function deleteTask(id) {
 
 async function updateTask(task, id) {
     // call REST API: PUT /tasks/<id>
-    console.log(task);
     return new Promise((resolve, reject) => {
         fetch('/tasks/' + id, {
             method: 'PUT',
@@ -113,4 +113,4 @@ async function updateTask(task, id) {
 }
 
 
-export { getTasks, getTask, getProjects, filter, projectFilter, addTask, taskCompleted, deleteTask, updateTask };
+export { getTasks, getTask, getProjects, filter, projectFilter, addTask, taskCheck, deleteTask, updateTask };

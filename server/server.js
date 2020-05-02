@@ -121,17 +121,17 @@ app.delete('/tasks/:id', (req, res) => {
     .catch( () => res.status(500).end() );
 });
 
-// [PUT] [/tasks/<task_id>/completed]
+// [PUT] [/tasks/<task_id>/check]
 // [Mark a task as completed]
 // [Request body: empty]
 // [Response body: id of the completed task]
 // [Errors: 404 Not Found -> id does not exist
 //          500 Internal Server Error
 //          503 Service Unavailable]
-app.put('/tasks/:id/completed',(req, res) => {
+app.put('/tasks/:id/check',(req, res) => {
     dao.readTaskById(req.params.id).then( (result) => {
         if(result === undefined) res.status(404).end();
-        dao.completeTask(req.params.id).then( () => res.json(req.params.id))
+        dao.checkTask(req.params.id).then( () => res.json(req.params.id))
         .catch( () => res.status(503).end() );
     })
     .catch( () => res.status(500).end() );

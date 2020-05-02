@@ -96,10 +96,25 @@ exports.updateTask = function (task) {
   });
 };
 
-exports.completeTask = function (id) {
-  return new Promise((resolve, reject) => {
-    const sql = 'UPDATE tasks SET completed = 1 WHERE id = ?';
-    db.run(sql, [id], (err) => {
+
+function taskStatus(id) {
+  return new Promise( (resolve, reject) => {
+    const sql = 'SELECT completed FROM tasks WHERE id = ?';
+    db.get(sql, [id], (err, row) => {
+      if(err) {
+        reject(err);
+        return;
+      }
+      resolve(row);
+    });
+  });
+}
+
+exports.checkTask = function (id) {
+  return new Promise(async (resolve, reject) => {
+    const row = await taskStatus(id);
+    const sql = 'UPDATE tasks SET completed = ? WHERE id = ?';
+    db.run(sql, [!row.completed, id], (err) => {
       if (err) {
         reject(err);
         return;
