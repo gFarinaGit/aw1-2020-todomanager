@@ -7,7 +7,8 @@ function MainContent(props) {
         <p id="title">{props.activeFilter.name.toUpperCase()}</p>
         <TasksTable tasks={props.tasks}
                     deleteTask={props.deleteTask}
-                    editTask={props.editTask}/>
+                    editTask={props.editTask}
+                    checkTask={props.checkTask}/>
         <AddButton addTask={props.addTask}/>
         <p className="version d-none d-sm-block">v-beta-3.0</p>
     </main>
@@ -24,7 +25,8 @@ class TasksTable extends React.Component {
             <tbody>
             { this.props.tasks.map( (t) => <TaskRow key={t.id} task={t}
                                                     deleteTask={this.props.deleteTask}
-                                                    editTask={this.props.editTask}/> )}
+                                                    editTask={this.props.editTask}
+                                                    checkTask={this.props.checkTask}/> )}
             </tbody>
         </table>
     }
@@ -32,7 +34,8 @@ class TasksTable extends React.Component {
 
 function TaskRow(props) {
     return <tr key = {props.task.id}>
-            <TaskData task={props.task}/>
+            <TaskData task={props.task}
+                      checkTask={props.checkTask}/>
             <TaskControl task={props.task}
                          deleteTask={props.deleteTask}
                          editTask={props.editTask}/>
@@ -47,19 +50,15 @@ class TaskData extends React.Component {
     }
 
     render() {
-        if(this.props.task.deadline){
-            const now = moment();
-            setTimeout( () => {
-                this.setState( {expired: true} );
-            }, this.props.task.deadline.diff(now));
-        }
         return <>
             <td>
                 <div className="custom-control custom-checkbox">
                     <input type="checkbox"
                            className={ this.props.task.important ? "custom-control-input important" : "custom-control-input" }
                            id={"checkbox" + this.props.task.id}
-                           defaultChecked={this.props.task.completed} />
+                           defaultChecked={this.props.task.completed}
+                           onClick={ () => this.props.checkTask(this.props.task.id) }
+                    />
                     <label className="custom-control-label" htmlFor={"checkbox" + this.props.task.id}>
                         { this.props.task.description }
                     </label>
@@ -78,13 +77,21 @@ class TaskData extends React.Component {
             </td>
             <td>
                 { (this.props.task.deadline) &&
-                    <p className={this.props.expired ? "deadline text-danger" : "deadline"}
+                    <p className={this.state.expired ? "deadline text-danger" : "deadline"}
                        id={"deadline" + this.props.task.id}>
                         { this.props.task.deadline.format("dddd Do MMMM YYYY") + " at " + this.props.task.deadline.format("HH:mm") }
                     </p>
                 }
             </td>
         </>
+    }
+    componentDidMount() {
+        if(this.props.task.deadline && !this.state.expired){
+            const now = moment();
+            setTimeout( () => {
+                this.setState( {expired: true} );
+            }, this.props.task.deadline.diff(now));
+        }
     }
 }
 

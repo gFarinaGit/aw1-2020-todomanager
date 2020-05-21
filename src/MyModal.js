@@ -22,7 +22,8 @@ class Form extends React.Component {
     constructor(props) {
         super(props);
 
-        let id, desc, project, important, privateTask, date, time;
+        let id, desc, project, important = 0, privateTask = 1, date, time;
+
         if(props.mode === 'edit') {
             id = props.editedtask.id;
             desc = props.editedtask.description;
@@ -49,6 +50,7 @@ class Form extends React.Component {
 
     render() {
         return <form role="form" method="POST" action="" id="new-task" autoComplete="off" name="post"
+                     ref={form => this.form = form}
                      onSubmit={ (ev) => ev.preventDefault() }>
             <FormData {...this.props} task={this.state} updateField={this.updateField}/>
             <FormControl {...this.props} submit={ () => this.validateAndSubmit(this.state) }/>
@@ -73,7 +75,7 @@ function FormData(props) {
                 <input type="text" className="form-control input-lg" name="project"
                        placeholder="Type a project for the task..." id="form_project"
                        value={ props.task.project || '' }
-                       onChange={ (ev) => props.updateField(ev.target.name, ev.target.value) } />
+                       onChange={ (ev) => props.updateField(ev.target.name, ev.target.value) }/>
             </div>
         </div>
         <div className="form-group row">
@@ -82,7 +84,7 @@ function FormData(props) {
                 <div className="form-check col-sm-10">
                     <input className="form-check-input" type="checkbox" id="form_important" name="important"
                            checked={ props.task.important }
-                           onChange={ (ev) => props.updateField(ev.target.name, ev.target.checked) } />
+                           onChange={ (ev) => props.updateField(ev.target.name, ev.target.checked) }/>
                     <label className="form-check-label" htmlFor="form_important">Yes</label>
                 </div>
             </div>
@@ -104,7 +106,7 @@ function FormData(props) {
                 <input type="date" name="date" id="form_date"
                        min={moment().format('YYYY-MM-DD')}
                        value={ props.task.date || '' }
-                       onChange={ (ev) => props.updateField(ev.target.name, ev.target.value) } />
+                       onChange={ (ev) => props.updateField(ev.target.name, ev.target.value) }/>
                 <input type="time" name="time" id="form_time"
                        value={ props.task.time || '' }
                        onChange={ (ev) => props.updateField(ev.target.name, ev.target.value) } />

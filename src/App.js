@@ -41,6 +41,12 @@ class App extends React.Component {
         API.filterTasks(this.state.activeFilter).then((t) => this.setState({tasks: t}));
     };
 
+    checkTask = (id) => {
+        console.log("checkTask called");
+        API.checkTask(id);
+        API.filterTasks(this.state.activeFilter).then((t) => this.setState({tasks: t}));
+    }
+
     editTask = (t) => this.setState({mode: "edit", editedTask: t});
 
     addTask = () => this.setState({mode: "add"});
@@ -48,7 +54,7 @@ class App extends React.Component {
     hideModal = () => this.setState({mode: "view"});
 
     formSubmit = (values) => {
-        API.updateTask(values);
+        API.addOrUpdateTask(values);
         API.filterTasks(this.state.activeFilter).then((t) => this.setState({tasks: t}));
         this.hideModal();
     }
@@ -65,7 +71,8 @@ class App extends React.Component {
                              tasks={this.state.tasks}
                              deleteTask={this.deleteTask}
                              editTask={this.editTask}
-                             addTask={this.addTask}/>
+                             addTask={this.addTask}
+                             checkTask={this.checkTask}/>
                 <MyModal mode={this.state.mode}
                          editedtask={this.state.editedTask}
                          onHide={this.hideModal}
